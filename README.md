@@ -8,3 +8,7 @@
 
 `pip3 install pyecharts
 `
+
+运行：
+`python draw_charts.py
+`

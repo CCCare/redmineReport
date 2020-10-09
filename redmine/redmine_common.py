@@ -21,12 +21,13 @@ def get_all_issues(redmine, project_name):
     # print(dir(issues))
     return issues
 
+
 # remdine redmine对象
 # project_name 项目标识
 # query_id 查询id
 # tracker_id 跟踪标签id
-def get_issues(redmine,project_name, query_id,tracker_id):
-    issues = redmine.issue.filter(project_id=project_name,query_id=query_id,tracker_id=tracker_id,status_id='*')
+def get_issues(redmine, project_name, query_id, tracker_id):
+    issues = redmine.issue.filter(project_id=project_name, query_id=query_id, tracker_id=tracker_id, status_id='*')
     return issues
 
 
@@ -41,11 +42,13 @@ def get_trackers(redmine):
     trackers = redmine.tracker.all()
     return trackers
 
-def get_trackerId_by_name(redmine,name):
-    trackers=get_trackers(redmine)
+
+def get_trackerId_by_name(redmine, name):
+    trackers = get_trackers(redmine)
     for tracker in trackers:
         if tracker.name == name:
             return tracker.id
+
 
 def get_issue_by_tracker(issues, tracker_name):
     tracker_id = 0
@@ -67,7 +70,7 @@ def get_issue_by_priority(issues, priority, issue_priority):
 
 
 # 根据问题优先级分类
-def classify_bug_issue_priorities(issues,priorities):
+def classify_bug_issue_priorities(issues, priorities):
     priority_class = {}
     issue_priority = {}
     for p in priorities:
@@ -214,11 +217,11 @@ if __name__ == '__main__':
     project_name = 'online'
     # project_name = 'dataapi-v4-0-2_beta'
     redmine = set_Redmine(redmine_url, redmine_key)
-    tracker_id = get_trackerId_by_name("产品BUG")
-    issues = get_issues(redmine,project_name,None,tracker_id)
+    tracker_id = get_trackerId_by_name(redmine, "产品BUG")
+    issues = get_issues(redmine, project_name, None, tracker_id)
     # issuesByAssignTo=stat_issue_by_assignTo(issues)
-    # issuesAll = stat_issue_by_createOrClose_time(issues)
+    issuesAll = stat_issue_by_createOrClose_time(issues)
     # print(hybrid_API_multimode())
-    # print(issues)
+    print(issuesAll)
 
     print(tracker_id)
