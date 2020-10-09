@@ -129,8 +129,9 @@ if __name__ == '__main__':
     redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
     # project_name = 'stream-works'
     project_name = 'dataapi-v4-0-2_beta'  # redmine项目标识
+    tracker_name = 'Bug'
     redmineObj = redmine_common.set_Redmine(redmine_url, redmine_key)
-    tracker_id = redmine_common.get_trackerId_by_name(redmineObj, "Bug")  # 跟踪标签需要手动填，不同项目跟踪标签不同
+    tracker_id = redmine_common.get_trackerId_by_name(redmineObj, tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
     query_id = None  # 自定义查询id
     issues = redmine_common.get_issues(redmineObj, project_name, query_id, tracker_id)
     issues_time = redmine_common.stat_issue_by_createOrClose_time(issues)
