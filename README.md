@@ -26,3 +26,6 @@ query_id = None  # （int类型）可以根据redmine中设置的自定义查询
 3. 打开redmine/reports/redmine.html即可查看报告
 
 4. 统计维度：
+(1). 按BUG优先级
+(2). 按BUG经办人
+(3). BUG创建时间和关闭时间对比
