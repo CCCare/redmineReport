@@ -27,7 +27,7 @@ def draw_pie_bug_priority(redmineObj,issues):
                             # legend_opts=opts.LegendOpts(pos_left="20%"),
                             # 工具箱配置项
                             toolbox_opts=opts.ToolboxOpts(is_show=True))
-           .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {d}%"))
+           .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}({d}%)"))
 
            )
     return pie
@@ -50,7 +50,7 @@ def draw_pie_bug_agent(issues):
                                                       subtitle="按Bug经办人分类"),
                             # 工具箱配置项
                             toolbox_opts=opts.ToolboxOpts(is_show=True))
-           .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {d}%"))
+           .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}({d}%)"))
            )
     return pie
 
@@ -113,13 +113,13 @@ def draw_line_bug_time(issue):
 
 
 def page_simple_layout(issues, issues_time):
-    priority_bar = draw_pie_bug_priority(redmineObj,issues)
-    assign_to_bar = draw_pie_bug_agent(issues)
+    priority_pie = draw_pie_bug_priority(redmineObj,issues)
+    assign_to_pie = draw_pie_bug_agent(issues)
     time_line = draw_line_bug_time(issues_time)
     page = Page(layout=Page.SimplePageLayout)
     page.add(
-        priority_bar,
-        assign_to_bar,
+        priority_pie,
+        assign_to_pie,
         time_line
     )
     page.render("reports/redmine.html")
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     redmine_url = 'http://redmine.prod.dtstack.cn/'  # redmine 的地址
     redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
     # project_name = 'stream-works'
-    project_name = 'dataapi-v4-0-2_beta'  # redmine项目标识
+    project_name = 'dataapi-v4-0-3_beta'  # redmine项目标识
     tracker_name = 'Bug'
     redmineObj = redmine_common.set_Redmine(redmine_url, redmine_key)
     tracker_id = redmine_common.get_trackerId_by_name(redmineObj, tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
