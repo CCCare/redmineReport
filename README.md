@@ -8,6 +8,8 @@ pip3 install python-redmine
 pip3 install pyecharts
 ```
 
+工具：PyCharm
+
 运行：
 1. 修改redmine项目信息
 
