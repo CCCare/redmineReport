@@ -8,8 +8,8 @@ import redmine_common
 
 
 # 参考文档：https://pyecharts.org/
-def draw_pie_bug_priority(issues):
-    data = redmine_common.hybrid_API_multimode(issues)
+def draw_pie_bug_priority(redmineObj,issues):
+    data = redmine_common.get_issues_by_priority(redmineObj,issues)
     cate = data.keys()
     v = []
     final = []
@@ -113,7 +113,7 @@ def draw_line_bug_time(issue):
 
 
 def page_simple_layout(issues, issues_time):
-    priority_bar = draw_pie_bug_priority(issues)
+    priority_bar = draw_pie_bug_priority(redmineObj,issues)
     assign_to_bar = draw_pie_bug_agent(issues)
     time_line = draw_line_bug_time(issues_time)
     page = Page(layout=Page.SimplePageLayout)

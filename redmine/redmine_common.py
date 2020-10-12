@@ -6,6 +6,8 @@ from redminelib import Redmine
 
 # issues = []
 # settings redmine,redmine's url :http://python-redmine.readthedocs.org/
+# global redmine
+
 def set_Redmine(redmine_url, redmine_key):
     redmine = Redmine(redmine_url, key=redmine_key)
     return redmine
@@ -34,7 +36,7 @@ def get_issues(redmine, project_name, query_id, tracker_id):
 # 获取问题优先级
 def get_issue_priorites(redmine):
     issues_priorites = redmine.enumeration.filter(resource='issue_priorities')
-    return issues_priorites._resources
+    return issues_priorites
 
 
 # 获取跟踪标签
@@ -117,111 +119,33 @@ def stat_issue_by_createOrClose_time(issues):
     print(issuesAll)
     return issuesAll
 
-
 # 获取multimode的数据
-def hybrid_API_multimode(issues):
-    Low = []
-    Normal = []
-    High = []
-    Urgent = []
-    Immediate = []
-    openlist = []
-    closelist = []
-    for i in issues:
-        try:
-            if str(i.tracker.name) == 'Bug' and str(i.priority.name) == "Low":
-                Low.append(i.id)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority.name) == "Normal":
-                Normal.append(i.id)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority.name) == "High":
-                High.append(i.id)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority.name) == "Urgent":
-                Urgent.append(i.id)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority.name) == "Immediate":
-                Immediate.append(i.id)
-            if str(i.tracker.name) == 'Bug' and str(i.status.name) == "New":
-                openlist.append(i.id)
-            if str(i.tracker.name) == 'Bug' and str(i.status.name) != "New":
-                closelist.append(i.id)
-        except Exception as e:
-            pass
-    final = {"Low": Low, "Normal": Normal, "High": High, "Urgent": Urgent, "Immediate": Immediate}
-
+def get_issues_by_priority(redmine,issues):
+    priorities = get_issue_priorites(redmine)
+    final= {}
+    for priority in priorities:
+        pri_list = []
+        for i in issues:
+            try:
+                if str(i.priority.name) == priority.name:
+                    pri_list.append(i.id)
+            except Exception as e:
+                pass
+        final[priority.name]=pri_list
     return final
-
-
-# 获取search的数据
-def hybrid_API_serach(issues):
-    Low = []
-    Normal = []
-    High = []
-    Urgent = []
-    Immediate = []
-    openl = []
-    colsel = []
-    for i in issues():
-        try:
-            if str(i.tracker.name) == 'Bug' and str(i.priority) == "Low":
-                Low.append(i)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority) == "Normal":
-                Normal.append(i)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority) == "High":
-                High.append(i)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority) == "Urgent":
-                Urgent.append(i)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority) == "Immediate":
-                Immediate.append(i)
-            if str(i.tracker.name) == 'Bug' and str(i.status) == "New":
-                openl.append(i)
-            if str(i.tracker.name) == 'Bug' and str(i.status) != "New":
-                colsel.append(i)
-        except Exception as e:
-            print(e)
-    return len(Low), len(Normal), len(High), len(Urgent), len(Immediate), len(openl), len(colsel)
-
-
-# 获取route&traffic的数据
-def hybrid_API_route_traffic(issues):
-    Low = []
-    Normal = []
-    High = []
-    Urgent = []
-    Immediate = []
-    openl = []
-    closel = []
-    for i in issues:
-        print(i)
-        try:
-            if str(i.tracker.name) == 'Bug' and str(i.priority) == "Low":
-                Low.append(i)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority) == "Normal":
-                Normal.append(i)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority) == "High":
-                High.append(i)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority) == "Urgent":
-                Urgent.append(i)
-            elif str(i.tracker.name) == 'Bug' and str(i.priority) == "Immediate":
-                Immediate.append(i)
-            if str(i.tracker.name) == 'Bug' and str(i.status) == "New":
-                openl.append(i)
-            if str(i.tracker.name) == 'Bug' and str(i.status) != "New":
-                closel.append(i)
-        except Exception as e:
-            print(e)
-    return len(Low), len(Normal), len(High), len(Urgent), len(Immediate), len(openl), len(closel)
-
 
 if __name__ == '__main__':
     redmine_url = 'http://redmine.prod.dtstack.cn/'  # redmine 的地址
     redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
-    project_name = 'online'
-    # project_name = 'dataapi-v4-0-2_beta'
+    # project_name = 'online'
+    project_name = 'dataapi-v4-0-3_beta'
     redmine = set_Redmine(redmine_url, redmine_key)
-    tracker_id = get_trackerId_by_name(redmine, "产品BUG")
+    tracker_id = get_trackerId_by_name(redmine, "Bug")
     issues = get_issues(redmine, project_name, None, tracker_id)
-    # issuesByAssignTo=stat_issue_by_assignTo(issues)
-    issuesAll = stat_issue_by_createOrClose_time(issues)
+    # # issuesByAssignTo=stat_issue_by_assignTo(issues)
+    # issuesAll = stat_issue_by_createOrClose_time(issues)
     # print(hybrid_API_multimode())
-    print(issuesAll)
-
-    print(tracker_id)
+    # priorities = get_issue_priorites(redmine)
+    final = get_issues_by_priority(redmine,issues)
+    print(final)
+    # print(tracker_id)
