@@ -23,7 +23,32 @@ def draw_pie_bug_priority(redmineObj,issues):
            .add('', [list(z) for z in zip(cate, v)],
                 radius=["30%", "75%"],
                 rosetype="radius")
-           .set_global_opts(title_opts=opts.TitleOpts(title="BUG优先级数据统计", subtitle="按Bug优先级分类"),
+           .set_global_opts(title_opts=opts.TitleOpts(title="BUG优先级统计图", subtitle="按优先级统计BUG"),
+                            # legend_opts=opts.LegendOpts(pos_left="20%"),
+                            # 工具箱配置项
+                            toolbox_opts=opts.ToolboxOpts(is_show=True))
+           .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}({d}%)"))
+
+           )
+    return pie
+
+def draw_pie_bug_tracker(all_issues):
+    # all_issues = redmine_common.get_issues(redmineObj, project_name, None, None);
+    data = redmine_common.get_issues_by_tracker(all_issues)
+    cate = data.keys()
+    v = []
+    final = []
+    for i in cate:
+        u = data.get(i)
+        v.append(len(u))
+    final.append(cate)
+    final.append(v)
+
+    pie = (Pie()
+           .add('', [list(z) for z in zip(cate, v)],
+                radius=["30%", "75%"],
+                rosetype="radius")
+           .set_global_opts(title_opts=opts.TitleOpts(title="跟踪标签统计图", subtitle="按跟踪标签统计issue"),
                             # legend_opts=opts.LegendOpts(pos_left="20%"),
                             # 工具箱配置项
                             toolbox_opts=opts.ToolboxOpts(is_show=True))
@@ -46,8 +71,8 @@ def draw_pie_bug_agent(issues):
                 [list(z) for z in zip(assignNames, v)],
                 radius=["30%", "75%"],
                 rosetype="radius")
-           .set_global_opts(title_opts=opts.TitleOpts(title="BUG经办人数据统计",
-                                                      subtitle="按Bug经办人分类"),
+           .set_global_opts(title_opts=opts.TitleOpts(title="指派人统计图",
+                                                      subtitle="按指派人统计BUG"),
                             # 工具箱配置项
                             toolbox_opts=opts.ToolboxOpts(is_show=True))
            .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}({d}%)"))
@@ -100,7 +125,7 @@ def draw_line_bug_time(issue):
             .set_series_opts(areastyle_opts=opts.AreaStyleOpts(opacity=0.5),
                              label_opts=opts.LabelOpts(is_show=False)
                              )
-            .set_global_opts(title_opts=opts.TitleOpts(title="BUG创建时间和关闭时间对比图"),
+            .set_global_opts(title_opts=opts.TitleOpts(title="创建时间和关闭时间对比图",subtitle="按创建时间/关闭时间统计BUG响应趋势"),
                              # 工具箱配置项
                              toolbox_opts=opts.ToolboxOpts(is_show=True),
                              xaxis_opts=opts.AxisOpts(axistick_opts=opts.AxisTickOpts(is_align_with_label=True),
@@ -112,12 +137,22 @@ def draw_line_bug_time(issue):
     return line
 
 
-def page_simple_layout(issues, issues_time):
-    priority_pie = draw_pie_bug_priority(redmineObj,issues)
-    assign_to_pie = draw_pie_bug_agent(issues)
-    time_line = draw_line_bug_time(issues_time)
+def page_simple_layout(redmineObj, project_name,query_id,tracker_name):
+
+    # 数据获取
+    all_issues = redmine_common.get_issues(redmineObj, project_name, query_id, None)  # 根据项目或者根据自定义查询id获取所有issue
+    tracker_id = redmine_common.get_trackerId_by_name(redmineObj, tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
+    issues = redmine_common.get_issues(redmineObj, project_name, query_id, tracker_id) # 根据tacker_id获取项目内或者自定义查询内的issue
+    issues_time = redmine_common.stat_issue_by_createOrClose_time(issues) # 获取issues中的创建时间和关闭时间
+
+    # 制作统计图
+    priority_pie = draw_pie_bug_priority(redmineObj,issues) # 按优先级统计BUG
+    assign_to_pie = draw_pie_bug_agent(issues) # 按指派人统计BUG
+    time_line = draw_line_bug_time(issues_time) # 按创建时间/关闭时间统计BUG
+    tracker_pie = draw_pie_bug_tracker(all_issues) # 按跟踪标签统计Issue
     page = Page(layout=Page.SimplePageLayout)
     page.add(
+        tracker_pie,
         priority_pie,
         assign_to_pie,
         time_line
@@ -129,10 +164,7 @@ if __name__ == '__main__':
     redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
     # project_name = 'stream-works'
     project_name = 'dataapi-v4-0-3_beta'  # redmine项目标识
-    tracker_name = 'Bug'
+    tracker_name = 'Bug' # 跟踪标签名称，不同项目跟踪标签不同
     redmineObj = redmine_common.set_Redmine(redmine_url, redmine_key)
-    tracker_id = redmine_common.get_trackerId_by_name(redmineObj, tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
     query_id = None  # 自定义查询id
-    issues = redmine_common.get_issues(redmineObj, project_name, query_id, tracker_id)
-    issues_time = redmine_common.stat_issue_by_createOrClose_time(issues)
-    page_simple_layout(issues, issues_time)
+    page_simple_layout(redmineObj, project_name,query_id,tracker_name)

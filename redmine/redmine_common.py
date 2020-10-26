@@ -17,17 +17,10 @@ def swich_project(redmine, project_name):
     global project
     project = redmine.project.get(project_name)
 
-
-def get_all_issues(redmine, project_name):
-    issues = redmine.issue.filter(project_id=project_name, status_id='*')
-    # print(dir(issues))
-    return issues
-
-
 # remdine redmine对象
 # project_name 项目标识
-# query_id 查询id
-# tracker_id 跟踪标签id
+# query_id 查询id, None为不查询query_id
+# tracker_id 跟踪标签id, None为不查询tracker_id
 def get_issues(redmine, project_name, query_id, tracker_id):
     issues = redmine.issue.filter(project_id=project_name, query_id=query_id, tracker_id=tracker_id, status_id='*')
     return issues
@@ -134,6 +127,25 @@ def get_issues_by_priority(redmine,issues):
         final[priority.name]=pri_list
     return final
 
+def get_issues_by_tracker(all_issues):
+    final = {}
+    tracker_list = []
+    for x in all_issues:
+        tracker_name = x.tracker.name
+        # if tracker_name not in final.keys():
+        #     final[tracker_name] = 1
+        # else:
+        #     final[tracker_name] = final[tracker_name] + 1
+        if tracker_name not in final.keys():
+            tracker_list = []
+        try:
+            if str(x.tracker.name) == tracker_name:
+                tracker_list.append(x.id)
+        except Exception as e:
+            pass
+        final[tracker_name] = tracker_list
+    return final
+
 if __name__ == '__main__':
     redmine_url = 'http://redmine.prod.dtstack.cn/'  # redmine 的地址
     redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
@@ -141,11 +153,14 @@ if __name__ == '__main__':
     project_name = 'dataapi-v4-0-3_beta'
     redmine = set_Redmine(redmine_url, redmine_key)
     tracker_id = get_trackerId_by_name(redmine, "Bug")
+    all_issues = get_issues(redmine,project_name,None,None);
     issues = get_issues(redmine, project_name, None, tracker_id)
+    # issues = get_all_issues(redmine, project_name)
     # # issuesByAssignTo=stat_issue_by_assignTo(issues)
     # issuesAll = stat_issue_by_createOrClose_time(issues)
     # print(hybrid_API_multimode())
     # priorities = get_issue_priorites(redmine)
-    final = get_issues_by_priority(redmine,issues)
+    # final = get_issues_by_priority(redmine,issues)
+    final = get_issues_by_tracker(all_issues)
     print(final)
     # print(tracker_id)
