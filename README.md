@@ -22,6 +22,8 @@ query_id = None  # （int类型）可以根据redmine中设置的自定义查询
 ```
 2. 运行draw_charts.py
 
+进入到工程下的redminereport/redmine目录中，执行下面命令：
+
 `python draw_charts.py
 `
 
