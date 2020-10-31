@@ -3,14 +3,8 @@ import datetime
 import time
 from redminelib import Redmine
 
-
-# issues = []
-# settings redmine,redmine's url :http://python-redmine.readthedocs.org/
-# global redmine
-
-def set_Redmine(redmine_url, redmine_key):
-    redmine = Redmine(redmine_url, key=redmine_key)
-    return redmine
+from redmine.common.redmine_common import set_Redmine
+from redmine.common.redmine_trackers import get_trackerId_by_name, get_trackers
 
 
 def swich_project(redmine, project_name):
@@ -32,17 +26,17 @@ def get_issue_priorites(redmine):
     return issues_priorites
 
 
-# 获取跟踪标签
-def get_trackers(redmine):
-    trackers = redmine.tracker.all()
-    return trackers
-
-
-def get_trackerId_by_name(redmine, name):
-    trackers = get_trackers(redmine)
-    for tracker in trackers:
-        if tracker.name == name:
-            return tracker.id
+# # 获取跟踪标签
+# def get_trackers(redmine):
+#     trackers = redmine.tracker.all()
+#     return trackers
+#
+#
+# def get_trackerId_by_name(redmine, name):
+#     trackers = get_trackers(redmine)
+#     for tracker in trackers:
+#         if tracker.name == name:
+#             return tracker.id
 
 
 def get_issue_by_tracker(issues, tracker_name):
@@ -132,17 +126,17 @@ def get_issues_by_tracker(all_issues):
     tracker_list = []
     for x in all_issues:
         tracker_name = x.tracker.name
+        logmessage = '%s : %s' %(x.id,tracker_name)
+        print(logmessage)
         # if tracker_name not in final.keys():
         #     final[tracker_name] = 1
         # else:
         #     final[tracker_name] = final[tracker_name] + 1
         if tracker_name not in final.keys():
             tracker_list = []
-        try:
-            if str(x.tracker.name) == tracker_name:
-                tracker_list.append(x.id)
-        except Exception as e:
-            pass
+        else:
+            tracker_list = final[tracker_name]
+        tracker_list.append(x.id)
         final[tracker_name] = tracker_list
     return final
 

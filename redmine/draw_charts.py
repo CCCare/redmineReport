@@ -4,12 +4,15 @@ import datetime
 from pyecharts import options as opts
 from pyecharts.charts import Pie, Page
 from pyecharts.charts import Line
-import redmine_common
-
 
 # 参考文档：https://pyecharts.org/
+from redmine.common.redmine_common import set_Redmine
+from redmine.common.redmine_issues import get_issues_by_priority, get_issues_by_tracker, stat_issue_by_assignTo, \
+    get_issues, get_trackerId_by_name, stat_issue_by_createOrClose_time
+
+
 def draw_pie_bug_priority(redmineObj,issues):
-    data = redmine_common.get_issues_by_priority(redmineObj,issues)
+    data = get_issues_by_priority(redmineObj,issues)
     cate = data.keys()
     v = []
     final = []
@@ -34,7 +37,7 @@ def draw_pie_bug_priority(redmineObj,issues):
 
 def draw_pie_bug_tracker(all_issues):
     # all_issues = redmine_common.get_issues(redmineObj, project_name, None, None);
-    data = redmine_common.get_issues_by_tracker(all_issues)
+    data = get_issues_by_tracker(all_issues)
     cate = data.keys()
     v = []
     final = []
@@ -59,7 +62,7 @@ def draw_pie_bug_tracker(all_issues):
 
 
 def draw_pie_bug_agent(issues):
-    issuesByAssignTo = redmine_common.stat_issue_by_assignTo(issues)
+    issuesByAssignTo = stat_issue_by_assignTo(issues)
     assignNames = issuesByAssignTo.keys()
     v = []
     for i in assignNames:
@@ -140,10 +143,10 @@ def draw_line_bug_time(issue):
 def page_simple_layout(redmineObj, project_name,query_id,tracker_name):
 
     # 数据获取
-    all_issues = redmine_common.get_issues(redmineObj, project_name, query_id, None)  # 根据项目或者根据自定义查询id获取所有issue
-    tracker_id = redmine_common.get_trackerId_by_name(redmineObj, tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
-    issues = redmine_common.get_issues(redmineObj, project_name, query_id, tracker_id) # 根据tacker_id获取项目内或者自定义查询内的issue
-    issues_time = redmine_common.stat_issue_by_createOrClose_time(issues) # 获取issues中的创建时间和关闭时间
+    all_issues = get_issues(redmineObj, project_name, query_id, None)  # 根据项目或者根据自定义查询id获取所有issue
+    tracker_id = get_trackerId_by_name(redmineObj, tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
+    issues = get_issues(redmineObj, project_name, query_id, tracker_id) # 根据tacker_id获取项目内或者自定义查询内的issue
+    issues_time = stat_issue_by_createOrClose_time(issues) # 获取issues中的创建时间和关闭时间
 
     # 制作统计图
     priority_pie = draw_pie_bug_priority(redmineObj,issues) # 按优先级统计BUG
@@ -163,8 +166,8 @@ if __name__ == '__main__':
     redmine_url = 'http://redmine.prod.dtstack.cn/'  # redmine 的地址
     redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
     # project_name = 'stream-works'
-    project_name = 'dataapi-v4-0-3_beta'  # redmine项目标识
+    project_name = 'dataassets-v4-1-1_beta'  # redmine项目标识
     tracker_name = 'Bug' # 跟踪标签名称，不同项目跟踪标签不同
-    redmineObj = redmine_common.set_Redmine(redmine_url, redmine_key)
+    redmineObj = set_Redmine(redmine_url, redmine_key)
     query_id = None  # 自定义查询id
     page_simple_layout(redmineObj, project_name,query_id,tracker_name)
