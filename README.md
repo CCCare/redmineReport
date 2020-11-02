@@ -34,3 +34,9 @@ query_id = None  # （int类型）可以根据redmine中设置的自定义查询
 (2). 按BUG优先级
 (3). 按BUG经办人
 (4). BUG创建时间和关闭时间对比
+
+4. 钉钉推送
+`
+pip3 install DingtalkChatbot
+`
+`pip3 install schedule`

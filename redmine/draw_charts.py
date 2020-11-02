@@ -143,9 +143,9 @@ def draw_line_bug_time(issue):
 def page_simple_layout(redmineObj, project_name,query_id,tracker_name):
 
     # 数据获取
-    all_issues = get_issues(redmineObj, project_name, query_id, None)  # 根据项目或者根据自定义查询id获取所有issue
+    all_issues = get_issues(redmineObj, project_name, query_id, None,None)  # 根据项目或者根据自定义查询id获取所有issue
     tracker_id = get_trackerId_by_name(redmineObj, tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
-    issues = get_issues(redmineObj, project_name, query_id, tracker_id) # 根据tacker_id获取项目内或者自定义查询内的issue
+    issues = get_issues(redmineObj, project_name, query_id, tracker_id,None) # 根据tacker_id获取项目内或者自定义查询内的issue
     issues_time = stat_issue_by_createOrClose_time(issues) # 获取issues中的创建时间和关闭时间
 
     # 制作统计图

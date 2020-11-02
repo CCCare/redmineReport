@@ -4,6 +4,7 @@ import time
 from redminelib import Redmine
 
 from redmine.common.redmine_common import set_Redmine
+from redmine.common.redmine_issue_status import get_issueStatus_by_name
 from redmine.common.redmine_trackers import get_trackerId_by_name, get_trackers
 
 
@@ -15,10 +16,31 @@ def swich_project(redmine, project_name):
 # project_name 项目标识
 # query_id 查询id, None为不查询query_id
 # tracker_id 跟踪标签id, None为不查询tracker_id
-def get_issues(redmine, project_name, query_id, tracker_id):
-    issues = redmine.issue.filter(project_id=project_name, query_id=query_id, tracker_id=tracker_id, status_id='*')
+def get_issues(redmine, project_name, query_id, tracker_id,status_name):
+    if status_name is not None:
+        status = get_issueStatus_by_name(redmine,status_name)
+        if status is not None:
+            issues = redmine.issue.filter(project_id=project_name, query_id=query_id, tracker_id=tracker_id, status_id=status.id)
+        else:
+            print("无"+status_name+"对应的状态")
+    else:
+        issues = redmine.issue.filter(project_id=project_name, query_id=query_id, tracker_id=tracker_id, status_id='*')
     return issues
 
+def get_issues_by_project(redmine, project_name, tracker_id,status_name):
+    if status_name is not None:
+        status = get_issueStatus_by_name(redmine,status_name)
+        if status is not None:
+            issues = redmine.issue.filter(project_id=project_name, tracker_id=tracker_id, status_id=status.id)
+        else:
+            print("无"+status_name+"对应的状态")
+    else:
+        issues = redmine.issue.filter(project_id=project_name, tracker_id=tracker_id, status_id='*')
+    return issues
+
+def get_issues_by_query_id(redmine, project_name,query_id):
+    issues = redmine.issue.filter(project_id=project_name,query_id=query_id)
+    return issues
 
 # 获取问题优先级
 def get_issue_priorites(redmine):
@@ -67,7 +89,7 @@ def classify_bug_issue_priorities(issues, priorities):
 
 
 def stat_issue_by_assignTo(issues):
-    print(dir(issues))
+    # print(dir(issues))
     issuesByAssignTo = dict()
     for x in issues:
         assign_user = x.assigned_to.name
@@ -126,12 +148,8 @@ def get_issues_by_tracker(all_issues):
     tracker_list = []
     for x in all_issues:
         tracker_name = x.tracker.name
-        logmessage = '%s : %s' %(x.id,tracker_name)
-        print(logmessage)
-        # if tracker_name not in final.keys():
-        #     final[tracker_name] = 1
-        # else:
-        #     final[tracker_name] = final[tracker_name] + 1
+        # logmessage = '%s : %s' %(x.id,tracker_name)
+        # print(logmessage)
         if tracker_name not in final.keys():
             tracker_list = []
         else:
@@ -140,21 +158,31 @@ def get_issues_by_tracker(all_issues):
         final[tracker_name] = tracker_list
     return final
 
-if __name__ == '__main__':
+def get_issue_by_id(redmine,id):
+    issue = redmine.issue.get(id)
+    return issue
+
+# if __name__ == '__main__':
     redmine_url = 'http://redmine.prod.dtstack.cn/'  # redmine 的地址
     redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
-    # project_name = 'online'
-    project_name = 'dataapi-v4-0-3_beta'
+#     redmine_url = 'http://172.16.100.144:10083/'  # redmine 的地址
+#     redmine_key = 'bd565b470778bd172e3960727d23dbef7d204c49'  # 这个是自己redmine的key
+    project_name = 'online'
+    # project_name = 'dataapi-v4-0-3_beta'
     redmine = set_Redmine(redmine_url, redmine_key)
-    tracker_id = get_trackerId_by_name(redmine, "Bug")
-    all_issues = get_issues(redmine,project_name,None,None);
-    issues = get_issues(redmine, project_name, None, tracker_id)
+    tracker_id = get_trackerId_by_name(redmine, "产品BUG")
+    # all_issues = get_issues(redmine,project_name,None,None,None);
+    # issues = get_issues(redmine, None, 128, tracker_id,'Resolved')
+    # issues = get_issues_by_query_id(redmine, 128, tracker_id,'Resolved')
+    issues = get_issues_by_query_id(redmine, project_name,1)
+    # issues = get_issues(redmine, None, 128, tracker_id,None)
     # issues = get_all_issues(redmine, project_name)
     # # issuesByAssignTo=stat_issue_by_assignTo(issues)
     # issuesAll = stat_issue_by_createOrClose_time(issues)
     # print(hybrid_API_multimode())
     # priorities = get_issue_priorites(redmine)
     # final = get_issues_by_priority(redmine,issues)
-    final = get_issues_by_tracker(all_issues)
-    print(final)
+    print(issues._total_count)
+    # final = get_issues_by_tracker(all_issues)
+    # print(final)
     # print(tracker_id)
