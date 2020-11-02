@@ -3,9 +3,7 @@ import datetime
 
 from redmine.alarm.alarm_bug import get_higher_bugs, compare_alarm_bugs, generate_dingtalk_message, save_data, \
     get_long_time_no_deal_bugs, get_result
-from redmine.alarm.alarm_bug import merge
 from redmine.common.redmine_common import set_Redmine
-from redmine.common.redmine_issues import get_issues
 from redmine.common.redmine_trackers import get_trackerId_by_name
 from redmine.tools.dingtalk import send_dingtalk_markdown
 
@@ -16,7 +14,7 @@ def job1(redmine,project_name,query,tracker_id,priorities,status_name,webhook,ti
     final = get_result(redmine, project_name, query, tracker_id, status_name, priorities)
     save_data(final)
     text = generate_dingtalk_message(redmine, final)
-    # send_dingtalk_markdown(webhook, title, text)
+    send_dingtalk_markdown(webhook, title, text)
     print('Job1-endTime:%s' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     print('------------------------------------------------------------------------')
 

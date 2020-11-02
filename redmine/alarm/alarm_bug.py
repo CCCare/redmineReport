@@ -65,19 +65,19 @@ def generate_dingtalk_message(redmine, result_bugs):
                     for bug_id in bugs :
                         n = n+1
                         bug = get_issue_by_id(redmine,bug_id)
-                        higher_bug_text = higher_bug_text + "* ["+bug.subject+"]("+redmine.url+"issues/%s) \n" %(bug.id)
+                        higher_bug_text = higher_bug_text + "* ["+bug.subject+"]("+redmine.url+"/issues/%s) \n" %(bug.id)
                 else:
                     not_closed_bugs = pingtai_bugs[key]
                     if (not_closed_bugs is not None and len(not_closed_bugs) != 0):
                         for nc_bug_id in not_closed_bugs:
                             bug = get_issue_by_id(redmine, nc_bug_id)
-                            not_closed_text = not_closed_text + "* [" + bug.subject + "](" + redmine.url + "issues/%s) \n" % (
+                            not_closed_text = not_closed_text + "* [" + bug.subject + "](" + redmine.url + "/issues/%s) \n" % (
                                 bug.id)
                             m = m + 1
         if (n==0 and m==0):
             text = None
         else:
-            text = "### 新增高优先级BUG%s个：\n" %(n) + higher_bug_text
+            text = "### 新增待验证的高优先级BUG%s个：\n" %(n) + higher_bug_text
             text = text + "### 长时间未验证的BUG%s个：\n" % (m) + not_closed_text
             result_text = result_text +"## "+ pingtai_name + "\n" + text+"\n"
     print(result_text)
