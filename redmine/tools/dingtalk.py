@@ -8,10 +8,10 @@ def send_dingtalk_markdown(webhook,title,text):
         dingtalk = DingtalkChatbot(webhook)
         print(text)
         # dingtalk.send_text(msg=message)
-        dingtalk.send_markdown(title=title,text=text)
+        dingtalk.send_markdown(title=title,text=text,at_mobiles=['15257183801','13738375762','18310593253'])
 
 if __name__ == '__main__':
-    webhook = 'https://oapi.dingtalk.com/robot/send?access_token=1327a4db1da11ec25e51569678f69241039e18e1426301e535b73961643ee665'  #填写你自己创建的机器人
+    webhook = 'https://oapi.dingtalk.com/robot/send?access_token=aff741f23bba7e599d512586944537f623464c46d75af860990e2c21435e7d37'  #填写你自己创建的机器人
     # dingtalk = DingtalkChatbot(webhook)
     # dingtalk.send_text(msg="【测试】我就是我, 是不一样的烟火")
     title = '线上BUG提醒'

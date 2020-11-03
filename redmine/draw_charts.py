@@ -6,13 +6,14 @@ from pyecharts.charts import Pie, Page
 from pyecharts.charts import Line
 
 # 参考文档：https://pyecharts.org/
-from redmine.common.redmine_common import set_Redmine
-from redmine.common.redmine_issues import get_issues_by_priority, get_issues_by_tracker, stat_issue_by_assignTo, \
-    get_issues, get_trackerId_by_name, stat_issue_by_createOrClose_time
+from redmine.common.base.config_operate import ReadConfig
+from redmine.common.redmine_common import MyRedmine
+from redmine.common.redmine_issues import MyIssue
+from redmine.common.redmine_trackers import MyTracker
 
 
-def draw_pie_bug_priority(redmineObj,issues):
-    data = get_issues_by_priority(redmineObj,issues)
+def draw_pie_bug_priority(priority_data):
+    data = priority_data
     cate = data.keys()
     v = []
     final = []
@@ -35,9 +36,9 @@ def draw_pie_bug_priority(redmineObj,issues):
            )
     return pie
 
-def draw_pie_bug_tracker(all_issues):
+def draw_pie_bug_tracker(tracker_bug_data):
     # all_issues = redmine_common.get_issues(redmineObj, project_name, None, None);
-    data = get_issues_by_tracker(all_issues)
+    data = tracker_bug_data
     cate = data.keys()
     v = []
     final = []
@@ -62,7 +63,7 @@ def draw_pie_bug_tracker(all_issues):
 
 
 def draw_pie_bug_agent(issues):
-    issuesByAssignTo = stat_issue_by_assignTo(issues)
+    issuesByAssignTo = issues
     assignNames = issuesByAssignTo.keys()
     v = []
     for i in assignNames:
@@ -141,18 +142,25 @@ def draw_line_bug_time(issue):
 
 
 def page_simple_layout(redmineObj, project_name,query_id,tracker_name):
-
+    myIssue = MyIssue(redmine)
+    myTracker = MyTracker(redmine)
     # 数据获取
-    all_issues = get_issues(redmineObj, project_name, query_id, None,None)  # 根据项目或者根据自定义查询id获取所有issue
-    tracker_id = get_trackerId_by_name(redmineObj, tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
-    issues = get_issues(redmineObj, project_name, query_id, tracker_id,None) # 根据tacker_id获取项目内或者自定义查询内的issue
-    issues_time = stat_issue_by_createOrClose_time(issues) # 获取issues中的创建时间和关闭时间
+    if query_id is not None:
+        all_issues = myIssue.get_issues_by_query_id(redmineObj,project_name,query_id)
+    else:
+        all_issues = myIssue.get_issues(project_name, None,None)  # 根据项目或者根据自定义查询id获取所有issue
+        tracker_id = myTracker.get_trackerId_by_name(tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
+        issues = myIssue.get_issues(project_name, tracker_id, None)  # 根据tacker_id获取项目内或者自定义查询内的issue
+    issues_time = myIssue.stat_issue_by_createOrClose_time(issues) # 获取issues中的创建时间和关闭时间
+    priority_data = myIssue.get_issues_by_priority(issues)
+    assign_to_data = myIssue.stat_issue_by_assignTo(issues)
+    tracker_bug_data = myIssue.get_issues_by_tracker(all_issues)
 
     # 制作统计图
-    priority_pie = draw_pie_bug_priority(redmineObj,issues) # 按优先级统计BUG
-    assign_to_pie = draw_pie_bug_agent(issues) # 按指派人统计BUG
+    priority_pie = draw_pie_bug_priority(priority_data) # 按优先级统计BUG
+    assign_to_pie = draw_pie_bug_agent(assign_to_data) # 按指派人统计BUG
     time_line = draw_line_bug_time(issues_time) # 按创建时间/关闭时间统计BUG
-    tracker_pie = draw_pie_bug_tracker(all_issues) # 按跟踪标签统计Issue
+    tracker_pie = draw_pie_bug_tracker(tracker_bug_data) # 按跟踪标签统计Issue
     page = Page(layout=Page.SimplePageLayout)
     page.add(
         tracker_pie,
@@ -160,14 +168,10 @@ def page_simple_layout(redmineObj, project_name,query_id,tracker_name):
         assign_to_pie,
         time_line
     )
-    page.render("reports/redmine.html")
+    page.render("./reports/redmine.html")
 
 if __name__ == '__main__':
-    redmine_url = 'http://redmine.prod.dtstack.cn/'  # redmine 的地址
-    redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
-    # project_name = 'stream-works'
-    project_name = 'dataassets-v4-1-1_beta'  # redmine项目标识
-    tracker_name = 'Bug' # 跟踪标签名称，不同项目跟踪标签不同
-    redmineObj = set_Redmine(redmine_url, redmine_key)
+    config = ReadConfig()
+    redmine = MyRedmine(config.REDMINE_URL,config.REDMINE_KEY).redmine
     query_id = None  # 自定义查询id
-    page_simple_layout(redmineObj, project_name,query_id,tracker_name)
+    page_simple_layout(redmine,config.REPORT_PROJECT,query_id,config.REPORT_TRACKER_NAME)

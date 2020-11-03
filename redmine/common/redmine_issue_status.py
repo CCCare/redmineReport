@@ -1,22 +1,25 @@
+from redmine.common.base.config_operate import ReadConfig
+from redmine.common.redmine_common import MyRedmine
 
-from redmine.common.redmine_common import set_Redmine
 
-def get_all_issueStatuses(redmine):
-    statuses = redmine.issue_status.all()
-    print(statuses)
-    return statuses
+class MyIssueStatus:
+    def __init__(self,redmine):
+        self.redmine = redmine
 
-def get_issueStatus_by_name(redmine,name):
-    statuses = redmine.issue_status.all()
-    for status in statuses:
-        if(status.name == name):
-            return status
+    def get_all_issueStatuses(self):
+        statuses = self.redmine.issue_status.all()
+        print(statuses)
+        return statuses
+
+    def get_issueStatus_by_name(self,name):
+        statuses = self.redmine.issue_status.all()
+        for status in statuses:
+            if(status.name == name):
+                return status
 
 if __name__ == '__main__':
-    redmine_url = 'http://redmine.prod.dtstack.cn/'  # redmine 的地址
-    redmine_key = 'bfa6f11a1770b3c8358ce5e625f611a66aa796ee'  # 这个是自己redmine的key
-    redmine = set_Redmine(redmine_url, redmine_key)
-    get_all_issueStatuses(redmine)
+    myIssueStatus = MyIssueStatus()
+    myIssueStatus.get_all_issueStatuses()
     status_name = "Resolved"
-    status = get_issueStatus_by_name(redmine,status_name)
+    status = myIssueStatus.get_issueStatus_by_name(status_name)
     print(status)
