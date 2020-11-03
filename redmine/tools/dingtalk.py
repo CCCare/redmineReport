@@ -6,8 +6,6 @@ higher_bug_text = "### 新增高优先级BUG${n}个："
 def send_dingtalk_markdown(webhook,title,text):
     if(text is not None or text != ''):
         dingtalk = DingtalkChatbot(webhook)
-        print(text)
-        # dingtalk.send_text(msg=message)
         dingtalk.send_markdown(title=title,text=text,at_mobiles=['15257183801','13738375762','18310593253'])
 
 if __name__ == '__main__':

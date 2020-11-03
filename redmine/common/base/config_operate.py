@@ -64,7 +64,7 @@ class ReadConfig:
     def read_configFile(self):
         cf = configparser.ConfigParser()
         path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        print("path:"+path)
+        # print("path:"+path)
         # redmineConfFile = os.path.abspath(os.path.join(os.getcwd(), '../../../', 'conf', 'redmine.cfg'))
         # dingTalkConfFile = os.path.abspath(os.path.join(os.getcwd(), '../../../', 'conf', 'dingTalk.cfg'))
         redmineConfFile = os.path.join(path, '../../conf/redmine.cfg')

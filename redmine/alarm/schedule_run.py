@@ -8,14 +8,9 @@ from redmine.tools.dingtalk import send_dingtalk_markdown
 
 
 def job1(redmine,project_name,query,priorities,webhook,title,hourdif,daydif):
-    print('Job1:每隔10秒执行一次的任务')
+    print('Job1:每天18：00执行一次的任务')
     print('Job1-startTime:%s' %(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-    # final = get_result(redmine, project_name, query, tracker_id, status_name, priorities)
-    # # save_data(final)
-    # text = generate_dingtalk_message(redmine, final)
-    # send_dingtalk_markdown(webhook, title, text)
     final = get_result(redmine, project_name, query, priorities, hourdif, daydif)
-    # save_data(final)
     text = generate_dingtalk_message(redmine, final, hourdif, daydif)
     send_dingtalk_markdown(webhook, title, text)
     print('Job1-endTime:%s' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
@@ -54,12 +49,11 @@ if __name__ == '__main__':
     daydif = config.DAY_DIFF
     final = get_result(redmine, project_id, query, priorities, hourdif, daydif)
     text = generate_dingtalk_message(redmine,final, hourdif, daydif)
-    schedule.every(20).seconds.do(job1,redmine,project_id,query,priorities,webhook,title,hourdif,daydif)
-    # schedule.every().day.at('18:00').do(job1,redmine,project_id,query,priorities,webhook,title,hourdif,daydif)
+    # schedule.every(20).seconds.do(job1,redmine,project_id,query,priorities,webhook,title,hourdif,daydif)
+    schedule.every().day.at('18:00').do(job1,redmine,project_id,query,priorities,webhook,title,hourdif,daydif)
     # schedule.every(20).seconds.do(job1,redmine,project_name,query,tracker_id,priorities,status_name,webhook,title)
     # schedule.every(30).seconds.do(job2)
     # schedule.every(1).minutes.do(job1)
-    # schedule.every().day.at('17:49').do(job4)
     # schedule.every(5).to(10).seconds.do(job5)
     while True:
         schedule.run_pending()

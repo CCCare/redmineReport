@@ -141,5 +141,5 @@ if __name__ == '__main__':
     hourdif=config.HOUR_DIFF
     daydif=config.DAY_DIFF
     final=get_result(redmine, project_id,query,priorities,hourdif,daydif)
-    text = generate_dingtalk_message(final,hourdif,daydif)
-    # send_dingtalk_markdown(redmine,webhook,title,text)
+    text = generate_dingtalk_message(redmine,final,hourdif,daydif)
+    send_dingtalk_markdown(webhook,title,text)
