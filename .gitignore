@@ -1,2 +1,9 @@
 redmine/__pycache__/redmine_common.cpython-37.pyc
 redmine/reports/redmine.html
+redmine/alarm/__pycache__/alarm_bug.cpython-37.pyc
+redmine/common/__pycache__/redmine_common.cpython-37.pyc
+redmine/common/__pycache__/redmine_issue_status.cpython-37.pyc
+redmine/common/__pycache__/redmine_issues.cpython-37.pyc
+redmine/common/__pycache__/redmine_trackers.cpython-37.pyc
+redmine/tools/__pycache__/dingtalk.cpython-37.pyc
+redmine/tools/__pycache__/json_file.cpython-37.pyc
