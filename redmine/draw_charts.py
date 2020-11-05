@@ -146,9 +146,10 @@ def page_simple_layout(redmineObj, project_name,query_id,tracker_name):
     myTracker = MyTracker(redmine)
     # 数据获取
     if query_id is not None:
-        all_issues = myIssue.get_issues_by_query_id(redmineObj,project_name,query_id)
+        issues = myIssue.get_issues_by_query_id(project_name,query_id)
+        all_issues = issues
     else:
-        all_issues = myIssue.get_issues(project_name, None,None)  # 根据项目或者根据自定义查询id获取所有issue
+        all_issues = myIssue.get_issues(project_name, None,None)  # 根据项目获取所有issue
         tracker_id = myTracker.get_trackerId_by_name(tracker_name)  # 跟踪标签需要手动填，不同项目跟踪标签不同
         issues = myIssue.get_issues(project_name, tracker_id, None)  # 根据tacker_id获取项目内或者自定义查询内的issue
     issues_time = myIssue.stat_issue_by_createOrClose_time(issues) # 获取issues中的创建时间和关闭时间
@@ -173,5 +174,5 @@ def page_simple_layout(redmineObj, project_name,query_id,tracker_name):
 if __name__ == '__main__':
     config = ReadConfig()
     redmine = MyRedmine(config.REDMINE_URL,config.REDMINE_KEY).redmine
-    query_id = None  # 自定义查询id
+    query_id = config.REPORT_QUERY_ID  # 自定义查询id
     page_simple_layout(redmine,config.REPORT_PROJECT,query_id,config.REPORT_TRACKER_NAME)

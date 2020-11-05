@@ -34,7 +34,10 @@ class ReadConfig:
         self.REDMINE_PROJECT = cf.get('redmine_dtstack','redmine_project')
 
         self.REPORT_PROJECT = cf.get('qa_report','report_project_index')
-        self.REPORT_QUERY_ID = int(cf.get('qa_report','report_query_id'))
+        if cf.get('qa_report','report_query_id') == "None":
+            self.REPORT_QUERY_ID = None
+        else:
+            self.REPORT_QUERY_ID = int(cf.get('qa_report','report_query_id'))
         self.REPORT_TRACKER_NAME = cf.get('qa_report','report_tracker_name')
 
         # 读取线上问题提醒配置
